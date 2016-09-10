@@ -3,26 +3,30 @@
 set -u
 set -e
 
-function p_path {
+function p_paths {
   set +u
-  r=$PPATH
+  local paths=$PPATH
   set -u
-  if [ -n "$r" ]; then
-    r=$(readlink -f "$r")
-  fi
-  echo "$r"
+  local OIFS=$IFS
+  IFS=':'
+  for path in $paths; do
+    readlink -f "$path"
+  done
+  IFS=$OIFS
 }
 
 function p_find_program {
   local prgname=$1
-  local prgpath="$(p_path)$prgname"
-  local prgbasename="$(basename "$prgpath")"
-  find "$(p_path)" -path "$prgpath*" | while read line; do
-    filename=$(basename "$line")
-    filename="${filename%.*}"
-    if [ "$filename" == "$prgbasename" ]; then
-      echo "$line"
-    fi
+  p_paths | while read path; do
+    local prgpath="$path""$prgname"
+    local prgbasename="$(basename "$prgpath")"
+    find "$path" -path "$prgpath*" | while read line; do
+      filename=$(basename "$line")
+      filename="${filename%.*}"
+      if [ "$filename" == "$prgbasename" ]; then
+        echo "$line"
+      fi
+    done
   done
 }
 
@@ -52,12 +56,14 @@ function p_run {
 }
 export -f p_run
 
-if [ -z "$(p_path)" ]; then
+if [ -z "$(p_paths)" ]; then
   >&2 echo '$PPATH is empty'
   exit 1
 fi
 
-if [ ! -d "$(p_path)" ]; then
-  >&2 echo "\$PPATH=\"$PPATH\" is not a directory"
-  exit 2
-fi
+p_paths | while read path; do
+  if [ ! -d "$path" ]; then
+    >&2 echo "\"$path\" in \$PPATH is not a directory"
+    exit 2
+  fi
+done
