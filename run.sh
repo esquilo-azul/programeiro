@@ -14,6 +14,6 @@ while [ -h "$PRG" ] ; do
   fi
 done
 
-DIR="`dirname "$PRG"`"
-source "$DIR/lib.sh"
+export PROOT="$(readlink -f $(dirname "$PRG"))"
+source "$PROOT/lib.sh"
 p_run "$@"

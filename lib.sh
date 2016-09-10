@@ -13,6 +13,7 @@ function p_paths {
     readlink -f "$path"
   done
   IFS=$OIFS
+  echo "$PROOT/programs"
 }
 
 function p_find_program {
@@ -55,11 +56,6 @@ function p_run {
   "$prgpath" "$@"
 }
 export -f p_run
-
-if [ -z "$(p_paths)" ]; then
-  >&2 echo '$PPATH is empty'
-  exit 1
-fi
 
 p_paths | while read path; do
   if [ ! -d "$path" ]; then
