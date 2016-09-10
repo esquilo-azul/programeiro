@@ -13,16 +13,32 @@ function p_path {
   echo "$r"
 }
 
+function p_find_program {
+  local prgpath="$(p_path)$prgname"
+  local prgname="$(basename "$prgpath")"
+  find "$(p_path)" -path "$prgpath*" | while read line; do
+    filename=$(basename "$line")
+    filename="${filename%.*}"
+    if [ "$filename" == "$prgname" ]; then
+      echo "$line"
+    fi
+  done
+}
+
 function p_run {
   set +u
-  prgname=$1
+  local prgname=$1
   shift
   set -u
   if [ -z "$prgname" ]; then
     >&2 echo 'Program name not set'
     exit 3
   fi
-  prgpath="$(p_path)$prgname"
+  local prgpath="$(p_find_program "$prgname")"
+  if [ -z "$prgpath" ]; then
+    >&2 echo "\"$prgname\" not found"
+    exit 6
+  fi
   if [ ! -f "$prgpath" ]; then
     >&2 echo "\"$prgpath\" is not a file"
     exit 4
