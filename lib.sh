@@ -14,12 +14,13 @@ function p_path {
 }
 
 function p_find_program {
+  local prgname=$1
   local prgpath="$(p_path)$prgname"
-  local prgname="$(basename "$prgpath")"
+  local prgbasename="$(basename "$prgpath")"
   find "$(p_path)" -path "$prgpath*" | while read line; do
     filename=$(basename "$line")
     filename="${filename%.*}"
-    if [ "$filename" == "$prgname" ]; then
+    if [ "$filename" == "$prgbasename" ]; then
       echo "$line"
     fi
   done
