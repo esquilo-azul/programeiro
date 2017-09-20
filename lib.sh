@@ -57,6 +57,52 @@ function p_run {
 }
 export -f p_run
 
+function _ends_with_slash() {
+  case "$1" in
+  */)
+      echo 'true'
+      ;;
+  *)
+      echo 'false'
+      ;;
+  esac
+}
+
+function p_completion_search() {
+  p_paths | while read path; do
+    p_completion_search_dir "$path" '' "$1" "$(_ends_with_slash "$1")"
+  done
+}
+export -f p_completion_search
+
+function p_completion_search_dir() {
+  local root_dir=$1
+  local subdir=$2
+  local subpath=$(echo $3 | sed 's|^/\+||g' | sed 's|/\+$||g')
+  local ends_with_slash=$4
+  subpath_fn=$(echo "$subpath" | sed 's|/.*$||g')
+  subpath_left=$(echo "$subpath" | sed 's|^[^/]*/||g')
+  if [ "$subpath_left" == "$subpath" ]; then
+    subpath_left=''
+  fi
+  find "$root_dir/$subdir" -mindepth 1 -maxdepth 1 -name "$subpath_fn*" | while read line; do
+    item=$(basename "$line")
+    if [ -z "$subpath_left" ]; then
+      if [ -d "$line" ]; then
+        if [ "$ends_with_slash" == 'true' ] && [ -n "$subpath" ]; then
+          p_completion_search_dir "$root_dir" "$subdir/$item" '' "$ends_with_slash"
+        else
+          echo "$subdir/$item/"
+        fi
+      else
+        echo "$subdir/${item%.*}"
+      fi
+    elif [ -d "$line" ]; then
+      p_completion_search_dir "$root_dir" "$subdir/$item" "$subpath_left" "$ends_with_slash"
+    fi
+  done
+}
+
 p_paths | while read path; do
   if [ ! -d "$path" ]; then
     >&2 echo "\"$path\" in \$PPATH is not a directory"

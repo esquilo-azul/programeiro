@@ -14,6 +14,8 @@ mkdir -p "`dirname "$RC_FILE"`"
 cat <<EOF > "$RC_FILE"
 export PPATH=$1
 alias programeiro="$PROOT/run.sh"
+export PROOT="$PROOT"
+source "$PROOT/completion.sh"
 EOF
 
 LINE=". '$RC_FILE'"
