@@ -1,6 +1,8 @@
 #!/bin/bash
 
-PALIAS="programeiro"
+if [[ -z $PALIAS ]]; then
+  PALIAS="programeiro"
+fi
 FUNCTION_NAME="_p_completion_$PALIAS"
 
 _p_completion() {
