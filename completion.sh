@@ -1,7 +1,7 @@
 #!/bin/bash
 
-P_ALIAS="programeiro"
-FUNCTION_NAME="_p_completion_$P_ALIAS"
+PALIAS="programeiro"
+FUNCTION_NAME="_p_completion_$PALIAS"
 
 _p_completion() {
   local cur
@@ -20,4 +20,4 @@ _p_completion() {
 }
 
 eval "${FUNCTION_NAME}() { source '$PROOT/lib.sh'; set +u; set +e; _p_completion; return 0; }"
-complete -F "$FUNCTION_NAME" -o nospace "$P_ALIAS"
+complete -F "$FUNCTION_NAME" -o nospace "$PALIAS"
