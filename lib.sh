@@ -53,10 +53,14 @@ function p_run {
   local prgname=$1
   shift
   set -u
+  if [ -z "${PPWD+x}" ]; then
+    export PPWD='/'
+  fi
   if [ -z "$prgname" ]; then
     >&2 echo 'Program name not set'
     exit 3
   fi
+  prgname="$(p_path_expand "$prgname" "$PPWD")"
   local prgpath="$(p_find_program "$prgname")"
   if [ -z "$prgpath" ]; then
     >&2 echo "\"$prgname\" not found"
@@ -70,7 +74,7 @@ function p_run {
     >&2 echo "\"$prgpath\" is not executable"
     exit 5
   fi
-  "$prgpath" "$@"
+  PPWD="$(dirname "$prgname")" "$prgpath" "$@"
 }
 export -f p_run
 
