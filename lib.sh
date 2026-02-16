@@ -79,22 +79,31 @@ function p_run {
     exit 3
   fi
   prgname="$(p_path_expand "$prgname" "$PPWD")"
-  local prgpath="$(p_find_program "$prgname")"
-  if [ -z "$prgpath" ]; then
-    >&2 echo "\"$prgname\" not found"
-    exit $PROGRAMEIRO_NOT_FOUND_ERROR
-  fi
-  if [ ! -f "$prgpath" ]; then
-    >&2 echo "\"$prgpath\" is not a file"
-    exit 4
-  fi
-  if [ ! -x "$prgpath" ]; then
-    >&2 echo "\"$prgpath\" is not executable"
-    exit 5
+  local prgpath=$(_p_run_path "$prgname")
+  if [[ -z "$prgpath" ]]; then
+    exit 1
   fi
   PPWD="$(dirname "$prgname")" "$prgpath" "$@"
 }
 export -f p_run
+
+function _p_run_path() {
+  local prgname="$1"
+  local prgpath="$(p_find_program "$prgname")"
+  if [ -z "$prgpath" ]; then
+    >&2 echo "\"$prgname\" not found"
+    return $PROGRAMEIRO_NOT_FOUND_ERROR
+  fi
+  if [ ! -f "$prgpath" ]; then
+    >&2 echo "\"$prgpath\" is not a file"
+    return 4
+  fi
+  if [ ! -x "$prgpath" ]; then
+    >&2 echo "\"$prgpath\" is not executable"
+    return 5
+  fi
+  printf "%s\n" "$prgpath"
+}
 
 function _ends_with_slash() {
   case "$1" in
