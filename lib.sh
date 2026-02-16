@@ -78,9 +78,24 @@ function p_run {
     >&2 echo 'Program name not set'
     exit 3
   fi
-  prgname="$(p_path_expand "$prgname" "$PPWD")"
-  local prgpath=$(_p_run_path "$prgname")
+
+  local prgpath=''
+  if [[ $prgname != '/'* ]] && [[ "$PPWD" != '/' ]]; then
+    local prgname0="$(p_path_expand "$prgname" "$PPWD")"
+    set +e
+    prgpath="$(_p_run_path "$prgname0")"
+    set -e
+  fi
+
   if [[ -z "$prgpath" ]]; then
+    local prgname0="$(p_path_expand "$prgname")"
+    set +e
+    prgpath="$(_p_run_path "$prgname0")"
+    set -e
+  fi
+
+  if [[ -z "$prgpath" ]]; then
+    >&2 echo "\"$prgname\" not found"
     exit 1
   fi
   PPWD="$(dirname "$prgname")" "$prgpath" "$@"
@@ -91,7 +106,6 @@ function _p_run_path() {
   local prgname="$1"
   local prgpath="$(p_find_program "$prgname")"
   if [ -z "$prgpath" ]; then
-    >&2 echo "\"$prgname\" not found"
     return $PROGRAMEIRO_NOT_FOUND_ERROR
   fi
   if [ ! -f "$prgpath" ]; then
