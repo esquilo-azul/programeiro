@@ -3,6 +3,8 @@
 set -u
 set -e
 
+export PROGRAMEIRO_NOT_FOUND_ERROR=6
+
 function p_path_expand() {
   PATH_ARG="$1"
   if [ $# -ge 2 ]; then
@@ -64,7 +66,7 @@ function p_run {
   local prgpath="$(p_find_program "$prgname")"
   if [ -z "$prgpath" ]; then
     >&2 echo "\"$prgname\" not found"
-    exit 6
+    exit $PROGRAMEIRO_NOT_FOUND_ERROR
   fi
   if [ ! -f "$prgpath" ]; then
     >&2 echo "\"$prgpath\" is not a file"
