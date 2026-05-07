@@ -24,7 +24,7 @@ function p_path_expand() {
 
 function p_paths {
   set +u
-  local paths=$PPATH
+  local paths=$PROGRAMEIRO_PATH
   set -u
   local OIFS=$IFS
   IFS=':'
@@ -167,7 +167,7 @@ function p_completion_search_dir() {
 
 p_paths | while read path; do
   if [ ! -d "$path" ]; then
-    >&2 echo "\"$path\" in \$PPATH is not a directory"
+    >&2 echo "\"$path\" in \$PROGRAMEIRO_PATH is not a directory"
     exit 2
   fi
 done

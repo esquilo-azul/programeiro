@@ -4,7 +4,7 @@ set -u
 set -e
 
 if [ "$#" -lt 1 ]; then
-  >&2 echo "Usage: $0 <PPATH>"
+  >&2 echo "Usage: $0 <PROGRAMEIRO_PATH>"
   exit 1
 fi
 
@@ -12,7 +12,7 @@ RC_FILE="$HOME/.config/programeiro/bashrc"
 mkdir -p "`dirname "$RC_FILE"`"
 
 cat <<EOF > "$RC_FILE"
-export PPATH=$1
+export PROGRAMEIRO_PATH=$1
 alias programeiro="$PROOT/run.sh"
 export PROOT="$PROOT"
 source "$PROOT/completion.sh"
