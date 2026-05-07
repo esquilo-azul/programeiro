@@ -8,10 +8,10 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 export PROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
-if [[ -z $PALIAS ]]; then
-  PALIAS="programeiro"
+if [[ -z $PROGRAMEIRO_ALIAS ]]; then
+  PROGRAMEIRO_ALIAS="programeiro"
 fi
-FUNCTION_NAME="_p_completion_$PALIAS"
+FUNCTION_NAME="_p_completion_$PROGRAMEIRO_ALIAS"
 
 _p_completion() {
   local cur
@@ -30,4 +30,4 @@ _p_completion() {
 }
 
 eval "${FUNCTION_NAME}() { source '$PROOT/lib.sh'; set +u; set +e; _p_completion; return 0; }"
-complete -F "$FUNCTION_NAME" -o nospace "$PALIAS"
+complete -F "$FUNCTION_NAME" -o nospace "$PROGRAMEIRO_ALIAS"
